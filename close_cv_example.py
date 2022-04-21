@@ -37,7 +37,6 @@ def put_xyzr_text(img):
 
 def rotate_image(image):
     try:
-        image_center = tuple(np.array(image.shape[1::-1]) / 2)
         face_center = ccv.face_center_coords
         rot_mat = cv2.getRotationMatrix2D(face_center, -1 * ccv.roll_diff, 1.0)
         result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR, borderValue=(255, 255, 255))
@@ -88,20 +87,24 @@ while True:
 
     # ccv 객체의 frame을 새로 써줌
     ccv.refresh(frame)
-    # 얼굴 크기로 작은 화면의 넓이와 높이 구하기
-    roi_h = ccv.face_coords[1] - ccv.face_coords[0]
-    roi_w = roi_h * frame.shape[1] / frame.shape[0]
-    # original frame 회전
-    rotate_frame = rotate_image(frame)
-    # 작은 화면만큼 ROI 구하기
-    ROI = rotate_frame[
-          int(ccv.face_center_coords[1] - roi_h / 2):int(ccv.face_center_coords[1] + roi_h / 2),
-          int(ccv.face_center_coords[0] - roi_w / 2):int(ccv.face_center_coords[0] + roi_w / 2)
-          ]
-    # frame에 오차만큼 선 그리기 (옵션 선택 가능, x 라인, y 라인)
+    try:
+        # 얼굴 크기로 작은 화면의 넓이와 높이 구하기
+        roi_h = ccv.face_coords[1] - ccv.face_coords[0]
+        roi_w = roi_h * frame.shape[1] / frame.shape[0]
+        # original frame 회전
+        rotate_frame = rotate_image(frame)
+        # 작은 화면만큼 ROI 구하기
+        ROI = rotate_frame[
+              int(ccv.face_center_coords[1] - roi_h / 2):int(ccv.face_center_coords[1] + roi_h / 2),
+              int(ccv.face_center_coords[0] - roi_w / 2):int(ccv.face_center_coords[0] + roi_w / 2)
+              ]
+    except TypeError:
+        roi_h, roi_w = int(frame.shape[0] / 2), int(frame.shape[1] / 2)
+        ROI = frame[0:roi_h, 0:roi_w]
+
     close_cv = ccv.annotated_frame(x=True, y=True)
     # frame에 네모랑 텍스트 그리기, 목표 z 오차면 초록색 아니면 빨간색
-    draw_rect(close_cv, target_z_diff=0.35, allow_range=0.1)
+    draw_rect(close_cv, target_z_diff=0.25, allow_range=0.1)
     # 화면에 텍스트 찍기
     close_cv = put_xyzr_text(close_cv)
 

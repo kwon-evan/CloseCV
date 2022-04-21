@@ -17,7 +17,7 @@ def rotate_image(image, landmarks):
 
 
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+predictor = dlib.shape_predictor('./close_cv/trained_models/shape_predictor_68_face_landmarks.dat')
 cam = cv2.VideoCapture(0)
 
 color_blue = (255, 0, 0)

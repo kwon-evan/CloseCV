@@ -19,8 +19,8 @@ class CloseCV(object):
         self.y_diff = None
         self.z_diff = None
         self.roll_diff = None
-        self.face_center_coords = None
-        self.face_coords = None
+        self.face_center_coords = [0, 0]
+        self.face_coords = [0, 0, 0, 0]
 
         self._face_detector = dlib.get_frontal_face_detector()
 
@@ -56,6 +56,10 @@ class CloseCV(object):
         try:
             landmarks = self._predictor(frame, faces[0])
             cur_face = Face(frame, faces[0], landmarks)
+            self.x_diff = self.calc_x_diff()
+            self.y_diff = self.calc_y_diff()
+            self.z_diff = self.calc_z_diff(frame, faces[0])
+            self.roll_diff = self.calc_roll_diff(landmarks)
             self.face_center_coords = cur_face.center_coords
             self.face_coords = [
                 cur_face.top,
@@ -63,10 +67,6 @@ class CloseCV(object):
                 cur_face.left,
                 cur_face.right
             ]
-            self.x_diff = self.calc_x_diff()
-            self.y_diff = self.calc_y_diff()
-            self.z_diff = self.calc_z_diff(frame, faces[0])
-            self.roll_diff = self.calc_roll_diff(landmarks)
 
         except IndexError:
             self.x_diff = None
@@ -111,14 +111,14 @@ class CloseCV(object):
                     (int(frame.shape[1] / 2), int(frame.shape[0] / 2)),
                     (int(frame.shape[1] / 2 + self.x_diff), int(frame.shape[0] / 2)),
                     color=(0, 0, 255),
-                    thickness=1
+                    thickness=2
                 )
                 cv2.line(
                     frame,
                     (int(frame.shape[1] / 2 + self.x_diff), int(frame.shape[0] / 2)),
                     (int(frame.shape[1] / 2 + self.x_diff), int(frame.shape[0] / 2 + self.y_diff)),
                     color=(255, 0, 0),
-                    thickness=1
+                    thickness=2
                 )
         elif x:
             if self.x_diff is not None:
@@ -127,7 +127,7 @@ class CloseCV(object):
                     (int(frame.shape[1] / 2), int(frame.shape[0] / 2)),
                     (int(frame.shape[1] / 2 + self.x_diff), int(frame.shape[0] / 2)),
                     color=(0, 0, 255),
-                    thickness=1
+                    thickness=2
                 )
         elif y:
             if self.y_diff is not None:
@@ -136,7 +136,7 @@ class CloseCV(object):
                     (int(frame.shape[1] / 2), int(frame.shape[0] / 2)),
                     (int(frame.shape[1] / 2), int(frame.shape[0] / 2 + self.y_diff)),
                     color=(0, 255, 0),
-                    thickness=1
+                    thickness=2
                 )
 
         return frame
