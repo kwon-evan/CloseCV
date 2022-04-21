@@ -101,27 +101,8 @@ class CloseCV(object):
         angle = theta * 180 / math.pi
         return angle
 
-    def rotate_image(self, image):
-        image_center = tuple(np.array(image.shape[1::-1]) / 2)
-        rot_mat = cv2.getRotationMatrix2D(image_center, -1 * self.roll_diff, 1.0)
-        result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR, borderValue=(255, 255, 255))
-        return result
-
-    def annotated_frame(self, x=False, y=False, rotate=False, face_rect=False):
+    def annotated_frame(self, x=False, y=False):
         frame = self.frame.copy()
-
-        if face_rect:
-            roi_h = self.face_coords[1] - self.face_coords[0]
-            roi_w = frame.shape[1] / frame.shape[0] * roi_h
-            cv2.rectangle(frame,
-                          (int(self.face_center_coords[0] - roi_w / 2), int(self.face_center_coords[1] - roi_h / 2)),
-                          (int(self.face_center_coords[0] + roi_w / 2), int(self.face_center_coords[1] + roi_h / 2)),
-                          color=(0, 255, 0),
-                          thickness=1)
-
-        if rotate:
-            if self.roll_diff is not None:
-                frame = self.rotate_image(frame)
 
         if x and y:
             if self.x_diff is not None and self.y_diff is not None:
@@ -130,14 +111,14 @@ class CloseCV(object):
                     (int(frame.shape[1] / 2), int(frame.shape[0] / 2)),
                     (int(frame.shape[1] / 2 + self.x_diff), int(frame.shape[0] / 2)),
                     color=(0, 0, 255),
-                    thickness=2
+                    thickness=1
                 )
                 cv2.line(
                     frame,
                     (int(frame.shape[1] / 2 + self.x_diff), int(frame.shape[0] / 2)),
                     (int(frame.shape[1] / 2 + self.x_diff), int(frame.shape[0] / 2 + self.y_diff)),
                     color=(255, 0, 0),
-                    thickness=2
+                    thickness=1
                 )
         elif x:
             if self.x_diff is not None:
@@ -146,7 +127,7 @@ class CloseCV(object):
                     (int(frame.shape[1] / 2), int(frame.shape[0] / 2)),
                     (int(frame.shape[1] / 2 + self.x_diff), int(frame.shape[0] / 2)),
                     color=(0, 0, 255),
-                    thickness=2
+                    thickness=1
                 )
         elif y:
             if self.y_diff is not None:
@@ -155,7 +136,7 @@ class CloseCV(object):
                     (int(frame.shape[1] / 2), int(frame.shape[0] / 2)),
                     (int(frame.shape[1] / 2), int(frame.shape[0] / 2 + self.y_diff)),
                     color=(0, 255, 0),
-                    thickness=2
+                    thickness=1
                 )
 
         return frame
