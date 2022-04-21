@@ -98,9 +98,11 @@ while True:
               int(ccv.face_center_coords[1] - roi_h / 2):int(ccv.face_center_coords[1] + roi_h / 2),
               int(ccv.face_center_coords[0] - roi_w / 2):int(ccv.face_center_coords[0] + roi_w / 2)
               ]
+        ROI = cv2.resize(ROI, dsize=(int(frame.shape[1] / 2), int(frame.shape[0] / 2)), interpolation=cv2.INTER_LINEAR)
     except TypeError:
         roi_h, roi_w = int(frame.shape[0] / 2), int(frame.shape[1] / 2)
         ROI = frame[0:roi_h, 0:roi_w]
+        ROI = cv2.resize(ROI, dsize=(int(frame.shape[1] / 2), int(frame.shape[0] / 2)), interpolation=cv2.INTER_LINEAR)
 
     close_cv = ccv.annotated_frame(x=True, y=True)
     # frame에 네모랑 텍스트 그리기, 목표 z 오차면 초록색 아니면 빨간색

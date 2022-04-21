@@ -73,6 +73,13 @@ class CloseCV(object):
             self.y_diff = None
             self.z_diff = None
             self.roll_diff = None
+            self.face_center_coords = [int(self.frame.shape[1] / 2), int(self.frame.shape[0] / 2)]
+            self.face_coords = [
+                self.face_center_coords[0] - 10,
+                self.face_center_coords[0] + 10,
+                self.face_center_coords[1] - 10,
+                self.face_center_coords[1] + 10
+            ]
 
     def calc_x_diff(self):
         """Returns x-diff between face and frame"""
